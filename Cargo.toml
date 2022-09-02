@@ -1,8 +1,8 @@
 [package]
-name = "git-delta"
+name = "git-delta-lib"
 authors = ["Dan Davison <dandavison7@gmail.com>"]
-categories = ["command-line-utilities", "development-tools"]
-description = "A syntax-highlighting pager for git"
+categories = ["development-tools", "visualization"]
+description = "Not ready for use: use crate git-delta for the application"
 documentation = "https://github.com/dandavison/delta"
 edition = "2018"
 homepage = "https://github.com/dandavison/delta"
@@ -13,6 +13,10 @@ version = "0.14.0"
 [[bin]]
 name = "delta"
 path = "src/main.rs"
+
+[lib]
+name = "delta_lib"
+path = "src/lib.rs"
 
 [dependencies]
 bat = "0.21.0"

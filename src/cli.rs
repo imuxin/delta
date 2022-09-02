@@ -1133,6 +1133,20 @@ impl Default for PagingMode {
 }
 
 impl Opt {
+    pub fn from_git_config(
+        env: DeltaEnv,
+        git_config: Option<GitConfig>,
+        assets: HighlightingAssets,
+    ) -> Self {
+        let empty_arg: Vec<String> = vec![];
+        Self::from_clap_and_git_config(
+            env,
+            Self::into_app().get_matches_from(empty_arg),
+            git_config,
+            assets,
+        )
+    }
+
     pub fn from_args_and_git_config(
         env: DeltaEnv,
         git_config: Option<GitConfig>,

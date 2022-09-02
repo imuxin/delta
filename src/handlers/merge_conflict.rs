@@ -299,6 +299,12 @@ impl MergeConflictCommitNames {
     }
 }
 
+impl Default for MergeConflictCommitNames {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::ansi::strip_ansi_codes;
@@ -375,7 +381,7 @@ index 27d47c0,3a7e7b9..0000000
 @@@ -1,14 -1,13 +1,24 @@@
  -use std::cmp::min;
   use std::ops::{Index, IndexMut};
-  
+
 ++<<<<<<< HEAD
  +use itertools::Itertools;
  +use unicode_segmentation::UnicodeSegmentation;
@@ -395,7 +401,7 @@ index 27d47c0,3a7e7b9..0000000
   use crate::minusplus::MinusPlus;
   use crate::paint;
 + use crate::style::DecorationStyle;
-  
+
   #[derive(Clone, Debug, PartialEq)]
   pub enum MergeConflictCommit {
 @@@ -30,7 -29,8 +40,15 @@@ pub type MergeConflictCommitNames = Mer
@@ -412,12 +418,12 @@ index 27d47c0,3a7e7b9..0000000
 ++        use MergeParents::*;
 ++>>>>>>> b2b28c8... Display merge conflict branches
           use State::*;
-  
+
           let mut handled_line = false;
 @@@ -38,36 -38,28 +56,113 @@@
               return Ok(handled_line);
           }
-  
+
 ++<<<<<<< HEAD
  +        match self.state.clone() {
  +            HunkHeader(Combined(merge_parents, InMergeConflict::No), _, _)
@@ -464,7 +470,7 @@ index 27d47c0,3a7e7b9..0000000
 +         // TODO: don't allocate on heap at this point
 +         let prefix = self.line[..min(self.line.len(), 2)].to_string();
 +         let diff_type = Combined(Prefix(prefix));
-+ 
++
 +         match self.state {
 +             // The only transition into a merge conflict is HunkZero => MergeConflict(Ours)
 +             // TODO: shouldn't this be HunkZero(Some(_))?
@@ -531,7 +537,7 @@ index 27d47c0,3a7e7b9..0000000
 @@@ -75,75 -67,71 +170,150 @@@
           Ok(handled_line)
       }
-  
+
 ++<<<<<<< HEAD
  +    fn enter_merge_conflict(&mut self, merge_parents: &MergeParents) -> bool {
  +        use State::*;
@@ -605,7 +611,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn enter_ancestral(&mut self) -> bool {
 +         use State::*;
 +         if let Some(commit) = parse_merge_marker(&self.line, "++|||||||") {
@@ -616,7 +622,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn enter_theirs(&mut self) -> bool {
 +         use State::*;
 +         if self.line.starts_with("++=======") {
@@ -626,7 +632,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn exit_merge_conflict(&mut self, diff_type: DiffType) -> std::io::Result<bool> {
 +         if let Some(commit) = parse_merge_marker(&self.line, "++>>>>>>>") {
 +             self.painter.merge_conflict_commit_names[Theirs] = Some(commit.to_string());
@@ -636,7 +642,7 @@ index 27d47c0,3a7e7b9..0000000
 +             Ok(false)
 +         }
 +     }
-+ 
++
 +     fn store_line(&mut self, commit: MergeConflictCommit, state: State) -> bool {
 +         use State::*;
 +         if let HunkMinus(diff_type, _) | HunkZero(diff_type) | HunkPlus(diff_type, _) = &state {
@@ -647,7 +653,7 @@ index 27d47c0,3a7e7b9..0000000
 +             delta_unreachable(&format!("Invalid state: {:?}", state))
 +         }
 +     }
-+ 
++
 +     fn paint_buffered_merge_conflict_lines(&mut self, diff_type: DiffType) -> std::io::Result<()> {
 ++>>>>>>> b2b28c8... Display merge conflict branches
           self.painter.emit()?;
@@ -665,7 +671,7 @@ index 27d47c0,3a7e7b9..0000000
 ++        let lines = &self.painter.merge_conflict_lines;
 ++        for derived_lines in &[&lines[Ours], &lines[Theirs]] {
 ++=======
-+ 
++
 +         write_merge_conflict_bar("▼", &mut self.painter, self.config)?;
 +         for (derived_commit_type, decoration_style) in &[(Ours, "box"), (Theirs, "box")] {
 +             write_subhunk_header(
@@ -701,7 +707,7 @@ index 27d47c0,3a7e7b9..0000000
           Ok(())
       }
   }
-  
+
 ++<<<<<<< HEAD
  +fn write_diff_header(
  +    derived_commit_type: &MergeConflictCommit,
@@ -810,7 +816,7 @@ index 27d47c0,3a7e7b9..0000000
 +     Ok(())
 + }
 ++>>>>>>> b2b28c8... Display merge conflict branches
-+ 
++
 ++<<<<<<< HEAD
 ++impl<T> Index<&MergeConflictCommit> for MergeConflictCommits<T> {
 ++    type Output = T;
@@ -840,7 +846,7 @@ index 27d47c0,3a7e7b9..0000000
 +     )?;
 +     Ok(())
 + }
-+ 
++
 + fn write_merge_conflict_bar(
 +     s: &str,
 +     painter: &mut paint::Painter,
@@ -851,7 +857,7 @@ index 27d47c0,3a7e7b9..0000000
 +     }
 +     Ok(())
 + }
-+ 
++
 + fn parse_merge_marker<'a>(line: &'a str, marker: &str) -> Option<&'a str> {
 +     match line.strip_prefix(marker) {
 +         Some(suffix) => {
@@ -865,9 +871,9 @@ index 27d47c0,3a7e7b9..0000000
 +         None => None,
 +     }
 + }
-+ 
++
 + pub use MergeConflictCommit::*;
-+ 
++
   impl<T> Index<MergeConflictCommit> for MergeConflictCommits<T> {
       type Output = T;
       fn index(&self, commit: MergeConflictCommit) -> &Self::Output {
@@ -903,7 +909,7 @@ index 27d47c0,3a7e7b9..0000000
 + use crate::config::{self, delta_unreachable};
 + use crate::delta::{DiffType, MergeParents, State, StateMachine};
 ++>>>>>>> b2b28c8... Display merge conflict branches
-@@@ -33,0 -32,0 +43,1 @@@ impl<'a> StateMachine<'a> 
+@@@ -33,0 -32,0 +43,1 @@@ impl<'a> StateMachine<'a>
 ++<<<<<<< HEAD
 @@@ -34,0 -33,1 +45,7 @@@
 ++||||||| parent of b2b28c8... Display merge conflict branches
@@ -960,7 +966,7 @@ index 27d47c0,3a7e7b9..0000000
 +         // TODO: don't allocate on heap at this point
 +         let prefix = self.line[..min(self.line.len(), 2)].to_string();
 +         let diff_type = Combined(Prefix(prefix));
-+ 
++
 +         match self.state {
 +             // The only transition into a merge conflict is HunkZero => MergeConflict(Ours)
 +             // TODO: shouldn't this be HunkZero(Some(_))?
@@ -1095,7 +1101,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn enter_ancestral(&mut self) -> bool {
 +         use State::*;
 +         if let Some(commit) = parse_merge_marker(&self.line, "++|||||||") {
@@ -1106,7 +1112,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn enter_theirs(&mut self) -> bool {
 +         use State::*;
 +         if self.line.starts_with("++=======") {
@@ -1116,7 +1122,7 @@ index 27d47c0,3a7e7b9..0000000
 +             false
 +         }
 +     }
-+ 
++
 +     fn exit_merge_conflict(&mut self, diff_type: DiffType) -> std::io::Result<bool> {
 +         if let Some(commit) = parse_merge_marker(&self.line, "++>>>>>>>") {
 +             self.painter.merge_conflict_commit_names[Theirs] = Some(commit.to_string());
@@ -1126,7 +1132,7 @@ index 27d47c0,3a7e7b9..0000000
 +             Ok(false)
 +         }
 +     }
-+ 
++
 +     fn store_line(&mut self, commit: MergeConflictCommit, state: State) -> bool {
 +         use State::*;
 +         if let HunkMinus(diff_type, _) | HunkZero(diff_type) | HunkPlus(diff_type, _) = &state {
@@ -1137,7 +1143,7 @@ index 27d47c0,3a7e7b9..0000000
 +             delta_unreachable(&format!("Invalid state: {:?}", state))
 +         }
 +     }
-+ 
++
 +     fn paint_buffered_merge_conflict_lines(&mut self, diff_type: DiffType) -> std::io::Result<()> {
 ++>>>>>>> b2b28c8... Display merge conflict branches
 @@@ -138,9 -125,10 +292,25 @@@
@@ -1155,7 +1161,7 @@ index 27d47c0,3a7e7b9..0000000
 ++        let lines = &self.painter.merge_conflict_lines;
 ++        for derived_lines in &[&lines[Ours], &lines[Theirs]] {
 ++=======
-+ 
++
 +         write_merge_conflict_bar("▼", &mut self.painter, self.config)?;
 +         for (derived_commit_type, decoration_style) in &[(Ours, "box"), (Theirs, "box")] {
 +             write_subhunk_header(
@@ -1288,7 +1294,7 @@ index 27d47c0,3a7e7b9..0000000
 +     Ok(())
 + }
 ++>>>>>>> b2b28c8... Display merge conflict branches
-+ 
++
 ++<<<<<<< HEAD
 ++impl<T> Index<&MergeConflictCommit> for MergeConflictCommits<T> {
 ++    type Output = T;
@@ -1318,7 +1324,7 @@ index 27d47c0,3a7e7b9..0000000
 +     )?;
 +     Ok(())
 + }
-+ 
++
 + fn write_merge_conflict_bar(
 +     s: &str,
 +     painter: &mut paint::Painter,
@@ -1329,7 +1335,7 @@ index 27d47c0,3a7e7b9..0000000
 +     }
 +     Ok(())
 + }
-+ 
++
 + fn parse_merge_marker<'a>(line: &'a str, marker: &str) -> Option<&'a str> {
 +     match line.strip_prefix(marker) {
 +         Some(suffix) => {
@@ -1343,9 +1349,9 @@ index 27d47c0,3a7e7b9..0000000
 +         None => None,
 +     }
 + }
-+ 
++
 + pub use MergeConflictCommit::*;
-+ 
++
 @@@ -246,0 -250,0 +528,1 @@@ impl<T> Index<&MergeConflictCommit> fo
 ++>>>>>>> b2b28c8... Display merge conflict branches
 "#;
