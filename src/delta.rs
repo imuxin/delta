@@ -159,8 +159,8 @@ impl<'a> StateMachine<'a> {
                 || self.handle_diff_stat_line()?
                 || self.handle_diff_header_diff_line()?
                 || self.handle_diff_header_file_operation_line()?
-                || self.handle_diff_header_minus_line()?
-                || self.handle_diff_header_plus_line()?
+                // || self.handle_diff_header_minus_line()?
+                // || self.handle_diff_header_plus_line()?
                 || self.handle_hunk_header_line()?
                 || self.handle_diff_header_mode_line()?
                 || self.handle_diff_header_misc_line()?

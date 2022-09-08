@@ -621,43 +621,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "git-delta-lib"
-version = "0.14.0"
-dependencies = [
- "ansi_colours",
- "ansi_term",
- "atty",
- "bat",
- "bitflags",
- "box_drawing",
- "bytelines",
- "chrono",
- "chrono-humanize",
- "clap 3.2.8",
- "console",
- "ctrlc",
- "dirs-next",
- "error-chain",
- "git2",
- "grep-cli",
- "itertools",
- "lazy_static",
- "palette",
- "pathdiff",
- "regex",
- "serde",
- "serde_json",
- "shell-words",
- "smol_str",
- "syntect",
- "sysinfo",
- "unicode-segmentation",
- "unicode-width",
- "vte",
- "xdg",
-]
-
-[[package]]
 name = "git-version"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -761,6 +724,43 @@ dependencies = [
  "matches",
  "unicode-bidi",
  "unicode-normalization",
+]
+
+[[package]]
+name = "imuxin-delta-lib"
+version = "0.0.2"
+dependencies = [
+ "ansi_colours",
+ "ansi_term",
+ "atty",
+ "bat",
+ "bitflags",
+ "box_drawing",
+ "bytelines",
+ "chrono",
+ "chrono-humanize",
+ "clap 3.2.8",
+ "console",
+ "ctrlc",
+ "dirs-next",
+ "error-chain",
+ "git2",
+ "grep-cli",
+ "itertools",
+ "lazy_static",
+ "palette",
+ "pathdiff",
+ "regex",
+ "serde",
+ "serde_json",
+ "shell-words",
+ "smol_str",
+ "syntect",
+ "sysinfo",
+ "unicode-segmentation",
+ "unicode-width",
+ "vte",
+ "xdg",
 ]
 
 [[package]]
